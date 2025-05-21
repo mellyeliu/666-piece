@@ -13,56 +13,128 @@ const styles = {
     fontFamily: FONT_FAMILY,
   },
   sidePanel: {
-    width: "250px",
+    width: "300px",
     padding: "20px",
     backgroundColor: "white",
     boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-    overflowY: "auto",
     borderRight: BORDER_STYLE,
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  elementsContainer: {
+    flex: 1,
+    overflowY: "auto",
+    border: BORDER_STYLE,
+    padding: "10px",
+    backgroundColor: "#fafafa",
+  },
+  comboBox: {
+    height: "300px",
+    border: BORDER_STYLE,
+    padding: "10px",
+    backgroundColor: "#fafafa",
   },
   mainArea: {
     flex: 1,
     padding: "20px",
     display: "flex",
     flexDirection: "column",
+    overflowY: "auto",
   },
-  canvas: {
+  storyContainer: {
     flex: 1,
+    backgroundColor: "#fafafa",
+    border: BORDER_STYLE,
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "40px",
+  },
+  storyEntry: {
+    display: "flex",
+    gap: "40px",
+    padding: "40px",
     backgroundColor: "white",
     border: BORDER_STYLE,
-    position: "relative",
-    backgroundImage:
-      "linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px)",
-    backgroundSize: "20px 20px",
+    opacity: 0,
+    animation: "fadeIn 1s ease-in forwards",
   },
-  elementInfo: {
-    position: "absolute",
-    padding: "10px",
-    backgroundColor: "white",
+  storyImage: {
+    width: "400px",
+    height: "400px",
+    backgroundColor: "#eee",
     border: BORDER_STYLE,
-    fontSize: "14px",
-    maxWidth: "200px",
-    zIndex: 1000,
-    fontFamily: FONT_FAMILY,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "64px",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
-  connectingLine: {
-    position: "absolute",
-    backgroundColor: "#333",
-    zIndex: 1,
-    transformOrigin: "0 0",
+  storyText: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
   },
-  sectionTitle: {
-    fontSize: "18px",
-    marginBottom: "15px",
-    color: "#333",
-    fontFamily: FONT_FAMILY,
+  storyTitle: {
+    fontSize: "36px",
+    fontWeight: "bold",
+  },
+  storyDescription: {
+    fontSize: "20px",
+    lineHeight: "1.6",
   },
   elementsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
     gap: "10px",
   },
+  comboGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "10px",
+    height: "100%",
+  },
+  comboSlot: {
+    border: "2px dashed #ccc",
+    borderRadius: "4px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+  },
+  activityLog: {
+    width: "300px",
+    padding: "20px",
+    backgroundColor: "white",
+    boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.1)",
+    borderLeft: BORDER_STYLE,
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    overflowY: "auto",
+  },
+  activityEntry: {
+    padding: "10px",
+    border: BORDER_STYLE,
+    backgroundColor: "#fafafa",
+    fontSize: "14px",
+    opacity: 0,
+    animation: "fadeIn 0.5s ease-in forwards",
+  },
 };
+
+// Add keyframes for fade-in animation
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(styleSheet);
 
 const initialElements = [
   {
@@ -98,21 +170,37 @@ const initialElements = [
 const Game = () => {
   const [elements, setElements] = useState(initialElements);
   const [discoveredElements, setDiscoveredElements] = useState(() => {
-    // Load discovered elements from localStorage on initial render
     const savedElements = localStorage.getItem("discoveredElements");
     return savedElements ? JSON.parse(savedElements) : [];
   });
   const [canvasElements, setCanvasElements] = useState([]);
   const [selectedElement, setSelectedElement] = useState(null);
   const [infoPosition, setInfoPosition] = useState({ x: 0, y: 0 });
+  const [comboSlots, setComboSlots] = useState([null, null]);
+  const [storyEntries, setStoryEntries] = useState(() => {
+    const savedEntries = localStorage.getItem("storyEntries");
+    return savedEntries ? JSON.parse(savedEntries) : [];
+  });
+  const [activityLog, setActivityLog] = useState(() => {
+    const savedLog = localStorage.getItem("activityLog");
+    return savedLog ? JSON.parse(savedLog) : [];
+  });
 
-  // Save discovered elements to localStorage whenever they change
+  // Save discovered elements and story entries to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem(
       "discoveredElements",
       JSON.stringify(discoveredElements)
     );
   }, [discoveredElements]);
+
+  useEffect(() => {
+    localStorage.setItem("storyEntries", JSON.stringify(storyEntries));
+  }, [storyEntries]);
+
+  useEffect(() => {
+    localStorage.setItem("activityLog", JSON.stringify(activityLog));
+  }, [activityLog]);
 
   const handleDragStart = (e, element) => {
     e.dataTransfer.setData("text/plain", JSON.stringify(element));
@@ -257,6 +345,80 @@ const Game = () => {
     });
   };
 
+  const addActivityLog = (message) => {
+    setActivityLog((prev) => [
+      ...prev,
+      {
+        message,
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ]);
+  };
+
+  const handleComboDrop = (e, slotIndex) => {
+    e.preventDefault();
+    const droppedElement = JSON.parse(e.dataTransfer.getData("text/plain"));
+
+    // Update the combo slot
+    setComboSlots((prev) => {
+      const newSlots = [...prev];
+      newSlots[slotIndex] = droppedElement;
+      return newSlots;
+    });
+
+    // Add to activity log
+    addActivityLog(
+      `Added ${droppedElement.name} (${droppedElement.chineseName}) to slot ${
+        slotIndex + 1
+      }`
+    );
+
+    // Check if we have both slots filled
+    const newSlots = [...comboSlots];
+    newSlots[slotIndex] = droppedElement;
+
+    if (newSlots[0] && newSlots[1]) {
+      const newElement = combineElements(newSlots[0], newSlots[1]);
+      if (newElement) {
+        // Add to discovered elements if not already there
+        if (!discoveredElements.some((el) => el.id === newElement.id)) {
+          setDiscoveredElements((prev) => [...prev, newElement]);
+
+          // Add new story entry
+          setStoryEntries((prev) => [
+            ...prev,
+            {
+              title: newElement.name,
+              chineseTitle: newElement.chineseName,
+              description: generateStoryDescription(newElement),
+              icon: newElement.icon,
+            },
+          ]);
+
+          // Add to activity log
+          addActivityLog(
+            `Created new element: ${newElement.name} (${newElement.chineseName})`
+          );
+        }
+
+        // Clear the combo slots
+        setComboSlots([null, null]);
+      } else {
+        addActivityLog("No combination found between these elements");
+      }
+    }
+  };
+
+  const generateStoryDescription = (element) => {
+    const stories = {
+      steam: `In the ancient scrolls of alchemy, the meeting of fire and water was considered a sacred moment. When the fierce heat of fire (火) embraces the gentle flow of water (水), a new form emerges - steam (蒸汽). This ethereal substance, neither solid nor liquid, represents the perfect balance of opposing forces. The ancient masters wrote that steam carries with it the promise of transformation, a reminder that from the union of opposites comes new life.`,
+      mud: `The earth (土) and water (水) dance together in an eternal embrace, creating mud (泥) - the primordial substance from which life springs forth. This humble mixture, often overlooked, holds within it the secrets of creation. The ancient texts speak of mud as the womb of the world, where the first seeds of life took root.`,
+      dust: `When the wind (气) caresses the earth (土), it lifts tiny particles into the air, creating dust (灰尘). This seemingly insignificant phenomenon was considered by the ancients to be a metaphor for the cycle of life and death. Each particle of dust, they believed, carried the memory of the earth from which it came.`,
+      lava: `The heart of the earth (土) meets the breath of fire (火), giving birth to lava (岩浆). This molten substance, flowing like water yet burning like fire, represents the raw power of creation. The ancient scrolls tell of how lava shapes the world, creating new lands and destroying old ones in an endless cycle of transformation.`,
+    };
+    return stories[element.id] || element.description;
+  };
+
   const combineElements = (element1, element2) => {
     const elements = [element1.id, element2.id].sort();
     const combinationKey = elements.join("-");
@@ -326,78 +488,69 @@ const Game = () => {
   return (
     <div style={styles.gameContainer}>
       <div style={styles.sidePanel}>
-        <div style={styles.elementsGrid}>
-          {[...elements, ...discoveredElements]
-            .filter(
-              (element, index, self) =>
-                index === self.findIndex((e) => e.id === element.id)
-            )
-            .map((element) => (
-              <Element
-                key={element.id}
-                {...element}
-                onDragStart={handleDragStart}
-                onClick={(e) => handleElementClick(e, element)}
-              />
+        <div style={styles.elementsContainer}>
+          <div style={styles.elementsGrid}>
+            {[...elements, ...discoveredElements]
+              .filter(
+                (element, index, self) =>
+                  index === self.findIndex((e) => e.id === element.id)
+              )
+              .map((element) => (
+                <Element
+                  key={element.id}
+                  {...element}
+                  onDragStart={handleDragStart}
+                  onClick={(e) => handleElementClick(e, element)}
+                />
+              ))}
+          </div>
+        </div>
+        <div style={styles.comboBox}>
+          <div style={styles.comboGrid}>
+            {[0, 1].map((index) => (
+              <div
+                key={index}
+                style={styles.comboSlot}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleComboDrop(e, index)}
+              >
+                {comboSlots[index] ? (
+                  <Element
+                    {...comboSlots[index]}
+                    onDragStart={handleDragStart}
+                  />
+                ) : (
+                  `Drop element ${index + 1} here`
+                )}
+              </div>
             ))}
+          </div>
         </div>
       </div>
       <div style={styles.mainArea}>
-        <div
-          style={styles.canvas}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          {canvasElements.map((element, index) => (
-            <div
-              key={index}
-              style={{
-                position: "absolute",
-                left: element.x,
-                top: element.y,
-                cursor: "move",
-                zIndex: 100,
-                backgroundColor: "white",
-              }}
-              draggable
-              onDragStart={(e) => handleDragStart(e, element)}
-              onClick={(e) => handleElementClick(e, element)}
-            >
-              <Element
-                {...element}
-                onDragStart={(e) => handleDragStart(e, element)}
-                onClick={(e) => handleElementClick(e, element)}
-              />
+        <div style={styles.storyContainer}>
+          {storyEntries.map((entry, index) => (
+            <div key={index} style={styles.storyEntry}>
+              <div style={styles.storyImage}>{entry.icon}</div>
+              <div style={styles.storyText}>
+                <div style={styles.storyTitle}>
+                  {entry.chineseTitle} - {entry.title}
+                </div>
+                <div style={styles.storyDescription}>{entry.description}</div>
+              </div>
             </div>
           ))}
-          {selectedElement && (
-            <>
-              <div
-                style={{
-                  ...styles.connectingLine,
-                  left: infoPosition.elementX,
-                  top: infoPosition.elementY,
-                  width: "100px",
-                  height: "1px",
-                  transform: "rotate(0deg)",
-                }}
-              />
-              <div
-                style={{
-                  ...styles.elementInfo,
-                  left: infoPosition.x,
-                  top: infoPosition.y,
-                }}
-              >
-                <div>{selectedElement.chineseName}</div>
-                <div>{selectedElement.name}</div>
-                <div style={{ fontSize: "12px", color: "#666" }}>
-                  {selectedElement.description}
-                </div>
-              </div>
-            </>
-          )}
         </div>
+      </div>
+      <div style={styles.activityLog}>
+        {activityLog.map((entry, index) => (
+          <div key={index} style={styles.activityEntry}>
+            <div style={{ color: "#666", fontSize: "12px" }}>
+              {entry.timestamp}
+            </div>
+            <div>{entry.message}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
