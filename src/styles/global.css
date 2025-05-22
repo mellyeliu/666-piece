@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&family=Syne+Mono&family=Xanh+Mono:ital@0;1&family=Zhi+Mang+Xing&display=swap");
+
+:root {
+  /* Colors */
+  --bg-primary: #dedcda;
+  --bg-secondary: #d4d2cb;
+  --bg-white: #fbfbfb;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --border-color: #878787;
+  --border-light: #cccccc;
+
+  /* Typography */
+  --font-family: "Noto Serif TC", serif;
+  --font-family-mono: "Syne Mono", monospace;
+  --font-family-mono-alt: "Xanh Mono", monospace;
+  --font-family-handwriting: "Zhi Mang Xing", cursive;
+  --font-size-small: 13px;
+  --font-size-medium: 14px;
+  --font-size-large: 36px;
+  --line-height: 1.6;
+
+  /* Spacing */
+  --spacing-xs: 1vh;
+  --spacing-sm: 2vh;
+  --spacing-md: 4vh;
+  --window-gap: 2vh;
+
+  /* Borders */
+  --border-width: 1px;
+  --border-style: double;
+  --border: var(--border-width) var(--border-style) var(--border-color);
+  --border-double: 3px double var(--border-color);
+
+  --border-light: var(--border-width) var(--border-style) var(--border-light);
+
+  /* Shadows */
+  --shadow-sm: 2px 0 5px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Layout */
+  --sidebar-width: clamp(220px, 15vw, 15vw);
+  --element-size: 8vh;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

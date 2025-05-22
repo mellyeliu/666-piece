@@ -2,14 +2,14 @@ import React from "react";
 
 const styles = {
   elementContainer: {
-    width: "80px",
+    width: "75px",
     height: "100px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "white",
-    border: "1px solid black",
+    border: "var(--border)",
     cursor: "move",
     userSelect: "none",
     fontFamily: "Helvetica", //"'Noto Serif TC', serif",

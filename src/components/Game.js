@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Element from "./Element";
+import Vignette from "./Vignette";
+import Inventory from "./Inventory";
+import ActivityLog from "./ActivityLog";
+import Scroll from "./Scroll";
+import "../styles/global.css";
 
 // Style variables
 const BORDER_STYLE = "1px solid #333";
@@ -9,8 +14,14 @@ const styles = {
   gameContainer: {
     display: "flex",
     height: "100vh",
-    backgroundColor: "#f0f0f0",
-    fontFamily: FONT_FAMILY,
+    fontFamily: "var(--font-family)",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "var(--window-gap)",
+    backgroundImage: "url('/paper.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   },
   sidePanel: {
     width: "300px",
@@ -37,19 +48,24 @@ const styles = {
   },
   mainArea: {
     flex: 1,
-    padding: "20px",
+    height: "calc(100vh - var(--spacing-md) * 2)",
     display: "flex",
     flexDirection: "column",
-    overflowY: "auto",
+    backgroundColor: "var(--bg-secondary)",
+    boxShadow: "var(--shadow-md)",
+    borderRadius: "var(--border-radius)",
+    border: "var(--border-double)",
+    overflow: "hidden",
+    paddingTop: 50,
   },
   storyContainer: {
     flex: 1,
-    backgroundColor: "#fafafa",
-    border: BORDER_STYLE,
-    padding: "20px",
+    backgroundColor: "var(--bg-secondary)",
+    padding: "var(--spacing-sm)",
     display: "flex",
     flexDirection: "column",
-    gap: "40px",
+    gap: "var(--spacing-md)",
+    overflowY: "auto",
   },
   storyEntry: {
     display: "flex",
@@ -411,10 +427,10 @@ const Game = () => {
 
   const generateStoryDescription = (element) => {
     const stories = {
-      steam: `In the ancient scrolls of alchemy, the meeting of fire and water was considered a sacred moment. When the fierce heat of fire (火) embraces the gentle flow of water (水), a new form emerges - steam (蒸汽). This ethereal substance, neither solid nor liquid, represents the perfect balance of opposing forces. The ancient masters wrote that steam carries with it the promise of transformation, a reminder that from the union of opposites comes new life.`,
-      mud: `The earth (土) and water (水) dance together in an eternal embrace, creating mud (泥) - the primordial substance from which life springs forth. This humble mixture, often overlooked, holds within it the secrets of creation. The ancient texts speak of mud as the womb of the world, where the first seeds of life took root.`,
-      dust: `When the wind (气) caresses the earth (土), it lifts tiny particles into the air, creating dust (灰尘). This seemingly insignificant phenomenon was considered by the ancients to be a metaphor for the cycle of life and death. Each particle of dust, they believed, carried the memory of the earth from which it came.`,
-      lava: `The heart of the earth (土) meets the breath of fire (火), giving birth to lava (岩浆). This molten substance, flowing like water yet burning like fire, represents the raw power of creation. The ancient scrolls tell of how lava shapes the world, creating new lands and destroying old ones in an endless cycle of transformation.`,
+      steam: `In the ancient scrolls of alchemy, the meeting of fire and water was considered a sacred moment. When the fierce heat of fire (火) embraces the gentle flow of water (水), a new form emerges - steam (蒸汽). This ethereal substance, `,
+      mud: `The earth (土) and water (水) dance together in an eternal embrace, creating mud (泥) - the primordial substance from which life springs forth. This humble mixture, often overlooked, holds within it the secrets of creation. `,
+      dust: `When the wind (气) caresses the earth (土), it lifts tiny particles into the air, creating dust (灰尘). This seemingly insignificant phenomenon was considered by the ancients to be a metaphor for the cycle of life and death.`,
+      lava: `The heart of the earth (土) meets the breath of fire (火), giving birth to lava (岩浆).  When the fierce heat of fire (火) embraces the gentle flow of water (水), a new form emerges `,
     };
     return stories[element.id] || element.description;
   };
@@ -487,71 +503,17 @@ const Game = () => {
 
   return (
     <div style={styles.gameContainer}>
-      <div style={styles.sidePanel}>
-        <div style={styles.elementsContainer}>
-          <div style={styles.elementsGrid}>
-            {[...elements, ...discoveredElements]
-              .filter(
-                (element, index, self) =>
-                  index === self.findIndex((e) => e.id === element.id)
-              )
-              .map((element) => (
-                <Element
-                  key={element.id}
-                  {...element}
-                  onDragStart={handleDragStart}
-                  onClick={(e) => handleElementClick(e, element)}
-                />
-              ))}
-          </div>
-        </div>
-        <div style={styles.comboBox}>
-          <div style={styles.comboGrid}>
-            {[0, 1].map((index) => (
-              <div
-                key={index}
-                style={styles.comboSlot}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleComboDrop(e, index)}
-              >
-                {comboSlots[index] ? (
-                  <Element
-                    {...comboSlots[index]}
-                    onDragStart={handleDragStart}
-                  />
-                ) : (
-                  `Drop element ${index + 1} here`
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <div style={styles.mainArea}>
-        <div style={styles.storyContainer}>
-          {storyEntries.map((entry, index) => (
-            <div key={index} style={styles.storyEntry}>
-              <div style={styles.storyImage}>{entry.icon}</div>
-              <div style={styles.storyText}>
-                <div style={styles.storyTitle}>
-                  {entry.chineseTitle} - {entry.title}
-                </div>
-                <div style={styles.storyDescription}>{entry.description}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div style={styles.activityLog}>
-        {activityLog.map((entry, index) => (
-          <div key={index} style={styles.activityEntry}>
-            <div style={{ color: "#666", fontSize: "12px" }}>
-              {entry.timestamp}
-            </div>
-            <div>{entry.message}</div>
-          </div>
-        ))}
-      </div>
+      <Inventory
+        elements={elements}
+        discoveredElements={discoveredElements}
+        comboSlots={comboSlots}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onComboDrop={handleComboDrop}
+        onElementClick={handleElementClick}
+      />
+      <Scroll entries={storyEntries} />
+      <ActivityLog entries={activityLog} />
     </div>
   );
 };
