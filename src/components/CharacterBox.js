@@ -58,7 +58,7 @@ const CharacterBox = () => {
     <div style={styles.characterBox}>
       <div style={styles.characterTitle}>角色</div>
       <div style={styles.characterContent}>
-        <div style={styles.characterImage}>👧</div>
+        <div style={styles.characterImage}>👧🏻</div>
         <div style={styles.statsContainer}>
           <div style={styles.statRow}>
             <span style={styles.statLabel}>Level</span>

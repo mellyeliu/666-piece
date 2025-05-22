@@ -46,7 +46,7 @@ const styles = {
     lineHeight: "var(--line-height)",
     fontFamily: "var(--font-family-mono)",
     padding: "var(--spacing-sm)",
-    backgroundImage: "url('/paper-light.png')",
+    background: "white",
 
     // backgroundColor: "white",
     position: "absolute",

@@ -52,6 +52,17 @@ const styles = {
 };
 
 const Scroll = ({ entries = [] }) => {
+  const contentToRender = [
+    {
+      title: "welcome",
+      chineseTitle: "思源",
+      description:
+        "A story of identities and beginnings. This is a placeholder! Loading...",
+      image: "welcome",
+    },
+    ...entries,
+  ];
+
   return (
     <div style={styles.scrollContainer}>
       <div style={styles.handle}>
@@ -59,7 +70,7 @@ const Scroll = ({ entries = [] }) => {
         <div style={styles.handleLine2} />
       </div>
       <div style={styles.content}>
-        {entries.map((entry, index) => (
+        {contentToRender.map((entry, index) => (
           <Vignette
             key={index}
             title={entry.title}

@@ -21,7 +21,7 @@ const styles = {
     flex: 1,
     padding: "var(--spacing-sm)",
     position: "relative",
-    backgroundImage: "radial-gradient(#e0e0e0 1px, transparent 1px)",
+    backgroundImage: "radial-gradient(#bbb 1px, transparent 1px)",
     backgroundSize: "20px 20px",
     backgroundColor: "var(--bg-white)",
   },

@@ -220,9 +220,22 @@ const Game = () => {
   });
   const [activityLog, setActivityLog] = useState(() => {
     const savedLog = localStorage.getItem("activityLog");
-    return savedLog ? JSON.parse(savedLog) : [];
+    const parsedLog = savedLog ? JSON.parse(savedLog) : [];
+
+    if (parsedLog.length === 0) {
+      return [
+        {
+          message:
+            "Welcome to 水彩 Storybook! You can start by dragging the elements onto the canvas... Beware. Everything is a placeholder right now!",
+          timestamp: "12:00:00 AM",
+        },
+      ];
+    }
+
+    return parsedLog;
   });
 
+  console.log(activityLog);
   // Save discovered elements and story entries to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem(
