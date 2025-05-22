@@ -4,6 +4,10 @@ import Vignette from "./Vignette";
 import Inventory from "./Inventory";
 import ActivityLog from "./ActivityLog";
 import Scroll from "./Scroll";
+import ComboBox from "./ComboBox";
+import CharacterBox from "./CharacterBox";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import "../styles/global.css";
 
 // Style variables
@@ -18,7 +22,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     gap: "var(--window-gap)",
-    backgroundImage: "url('/paper.png')",
+    backgroundImage: "url('/paper-light.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -114,7 +118,7 @@ const styles = {
     height: "100%",
   },
   comboSlot: {
-    border: "2px dashed #ccc",
+    border: "1px solid black",
     borderRadius: "4px",
     display: "flex",
     alignItems: "center",
@@ -139,6 +143,24 @@ const styles = {
     fontSize: "14px",
     opacity: 0,
     animation: "fadeIn 0.5s ease-in forwards",
+  },
+  scrollHandle: {
+    position: "absolute",
+    top: "calc(50% - 300px)", // Move it higher above the scroll
+    left: "50%",
+    transform: "translateX(-50%)",
+    width: "40px",
+    height: "20px",
+    display: "flex",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  handleLine: {
+    width: "1px",
+    height: "20px",
+    backgroundColor: "#333",
+    transform: "rotate(45deg)",
+    margin: "0 -10px",
   },
 };
 
@@ -189,10 +211,9 @@ const Game = () => {
     const savedElements = localStorage.getItem("discoveredElements");
     return savedElements ? JSON.parse(savedElements) : [];
   });
-  const [canvasElements, setCanvasElements] = useState([]);
+  const [gridElements, setGridElements] = useState([]);
   const [selectedElement, setSelectedElement] = useState(null);
   const [infoPosition, setInfoPosition] = useState({ x: 0, y: 0 });
-  const [comboSlots, setComboSlots] = useState([null, null]);
   const [storyEntries, setStoryEntries] = useState(() => {
     const savedEntries = localStorage.getItem("storyEntries");
     return savedEntries ? JSON.parse(savedEntries) : [];
@@ -279,7 +300,7 @@ const Game = () => {
       });
     }
 
-    const targetElement = canvasElements.find((canvasEl) => {
+    const targetElement = gridElements.find((canvasEl) => {
       const elementRect = {
         left: canvasEl.x,
         right: canvasEl.x + elementSize,
@@ -297,7 +318,7 @@ const Game = () => {
     if (targetElement) {
       const newElement = combineElements(targetElement, droppedElement);
       if (newElement) {
-        setCanvasElements((prev) =>
+        setGridElements((prev) =>
           prev
             .filter(
               (el) => el.id !== targetElement.id && el.id !== droppedElement.id
@@ -317,12 +338,12 @@ const Game = () => {
     }
 
     if (isMove) {
-      setCanvasElements((prev) =>
+      setGridElements((prev) =>
         prev.map((el) => (el.id === droppedElement.id ? { ...el, x, y } : el))
       );
     } else {
-      if (!canvasElements.some((el) => el.id === droppedElement.id)) {
-        setCanvasElements((prev) => [...prev, { ...droppedElement, x, y }]);
+      if (!gridElements.some((el) => el.id === droppedElement.id)) {
+        setGridElements((prev) => [...prev, { ...droppedElement, x, y }]);
       }
     }
   };
@@ -333,24 +354,23 @@ const Game = () => {
     const y = e.clientY - rect.top;
 
     // Update element position
-    setCanvasElements((prev) =>
+    setGridElements((prev) =>
       prev.map((el) => (el.id === element.id ? { ...el, x, y } : el))
     );
   };
 
   const handleElementClick = (e, element) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const canvasRect = e.currentTarget
-      .closest('[style*="position: relative"]')
-      .getBoundingClientRect();
+    const windowWidth = window.innerWidth;
 
-    // Calculate position relative to canvas
-    const elementX = rect.left - canvasRect.left + rect.width / 2;
-    const elementY = rect.top - canvasRect.top + rect.height / 2;
+    // Calculate position relative to the viewport
+    const elementX = rect.left + rect.width / 2;
+    const elementY = rect.top + rect.height / 2;
 
-    // Position the info box 100px to the right of the element
-    const infoX = elementX + 100;
-    const infoY = elementY - 50; // Center vertically relative to the element
+    // Calculate info box position based on window width
+    const infoWidth = Math.min(200, windowWidth * 0.15); // 15% of window width, max 200px
+    const infoX = Math.max(20, elementX - infoWidth - 150); // Slightly closer
+    const infoY = elementY - 50;
 
     setSelectedElement(element);
     setInfoPosition({
@@ -358,8 +378,64 @@ const Game = () => {
       y: infoY,
       elementX,
       elementY,
+      infoWidth,
+      elementRect: rect, // Store the element's rect for resize calculations
     });
   };
+
+  // Add window resize handler
+  useEffect(() => {
+    const handleResize = () => {
+      if (selectedElement) {
+        // Find the element in the DOM
+        const element = document.querySelector(
+          `[data-element-id="${selectedElement.id}"]`
+        );
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const windowWidth = window.innerWidth;
+
+          // Calculate new positions
+          const elementX = rect.left + rect.width / 2;
+          const elementY = rect.top + rect.height / 2;
+          const infoWidth = Math.min(200, windowWidth * 0.15);
+          const infoX = Math.max(20, elementX - infoWidth - 150);
+          const infoY = elementY - 50;
+
+          // Update info position
+          setInfoPosition((prev) => ({
+            ...prev,
+            x: infoX,
+            y: infoY,
+            elementX,
+            elementY,
+            infoWidth,
+          }));
+        }
+      }
+    };
+
+    // Add resize observer to track element position changes
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+
+    if (selectedElement) {
+      const element = document.querySelector(
+        `[data-element-id="${selectedElement.id}"]`
+      );
+      if (element) {
+        resizeObserver.observe(element);
+      }
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
+    };
+  }, [selectedElement]);
 
   const addActivityLog = (message) => {
     setActivityLog((prev) => [
@@ -376,7 +452,7 @@ const Game = () => {
     const droppedElement = JSON.parse(e.dataTransfer.getData("text/plain"));
 
     // Update the combo slot
-    setComboSlots((prev) => {
+    setGridElements((prev) => {
       const newSlots = [...prev];
       newSlots[slotIndex] = droppedElement;
       return newSlots;
@@ -390,7 +466,7 @@ const Game = () => {
     );
 
     // Check if we have both slots filled
-    const newSlots = [...comboSlots];
+    const newSlots = [...gridElements];
     newSlots[slotIndex] = droppedElement;
 
     if (newSlots[0] && newSlots[1]) {
@@ -418,7 +494,7 @@ const Game = () => {
         }
 
         // Clear the combo slots
-        setComboSlots([null, null]);
+        setGridElements([null, null]);
       } else {
         addActivityLog("No combination found between these elements");
       }
@@ -443,49 +519,49 @@ const Game = () => {
       "fire-water": {
         id: "steam",
         name: "Steam",
-        chineseName: "蒸汽",
+        chineseName: "蒸汽蒸汽",
         icon: "💨",
         description: "The result of heat meeting water",
       },
       "water-fire": {
         id: "steam",
         name: "Steam",
-        chineseName: "蒸汽",
+        chineseName: "蒸汽灰尘汽",
         icon: "💨",
         description: "The result of heat meeting water",
       },
       "water-earth": {
         id: "mud",
         name: "Mud",
-        chineseName: "泥",
+        chineseName: "泥汽蒸泥",
         icon: "🌊",
         description: "The mixture of earth and water",
       },
       "earth-water": {
         id: "mud",
         name: "Mud",
-        chineseName: "泥",
+        chineseName: "泥蒸泥",
         icon: "🌊",
         description: "The mixture of earth and water",
       },
       "earth-air": {
         id: "dust",
         name: "Dust",
-        chineseName: "灰尘",
+        chineseName: "灰尘汽蒸汽",
         icon: "💨",
         description: "Air carrying earth particles",
       },
       "air-earth": {
         id: "dust",
         name: "Dust",
-        chineseName: "灰尘",
+        chineseName: "灰尘蒸汽",
         icon: "💨",
         description: "Air carrying earth particles",
       },
       "fire-earth": {
         id: "lava",
         name: "Lava",
-        chineseName: "岩浆",
+        chineseName: "岩尘汽汽浆",
         icon: "🌋",
         description: "Molten earth created by fire",
       },
@@ -501,20 +577,204 @@ const Game = () => {
     return combinations[combinationKey] || null;
   };
 
+  const handleWindowDrop = (e) => {
+    // Remove the activity log position update since we don't need it anymore
+  };
+
+  const handleGridDrop = (e, x, y) => {
+    e.preventDefault();
+    const droppedElement = JSON.parse(e.dataTransfer.getData("text/plain"));
+    const isMove = e.dataTransfer.getData("isMove") === "true";
+
+    // Check for nearby elements to combine with
+    const nearbyElements = gridElements.filter((element) => {
+      const dx = element.x - x;
+      const dy = element.y - y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      return distance < 60; // 60px threshold for combination
+    });
+
+    if (nearbyElements.length > 0) {
+      const targetElement = nearbyElements[0];
+      const newElement = combineElements(targetElement, droppedElement);
+
+      if (newElement) {
+        // Add to discovered elements if not already there
+        if (!discoveredElements.some((el) => el.id === newElement.id)) {
+          setDiscoveredElements((prev) => [...prev, newElement]);
+
+          // Add new story entry
+          setStoryEntries((prev) => [
+            ...prev,
+            {
+              title: newElement.name,
+              chineseTitle: newElement.chineseName,
+              description: generateStoryDescription(newElement),
+              icon: newElement.icon,
+            },
+          ]);
+
+          // Add to activity log
+          addActivityLog(
+            `Created new element: ${newElement.name} (${newElement.chineseName}) from combining ${targetElement.name} and ${droppedElement.name}`
+          );
+
+          // Remove the combined elements
+          setGridElements((prev) =>
+            prev.filter(
+              (el) => el.id !== targetElement.id && el.id !== droppedElement.id
+            )
+          );
+        }
+        return;
+      }
+    }
+
+    // If no combination, add the element to the grid
+    if (isMove) {
+      setGridElements((prev) =>
+        prev.map((el) => (el.id === droppedElement.id ? { ...el, x, y } : el))
+      );
+    } else {
+      if (!gridElements.some((el) => el.id === droppedElement.id)) {
+        setGridElements((prev) => [...prev, { ...droppedElement, x, y }]);
+        addActivityLog(
+          `Added ${droppedElement.name} (${droppedElement.chineseName}) to the grid`
+        );
+      }
+    }
+  };
+
   return (
-    <div style={styles.gameContainer}>
-      <Inventory
-        elements={elements}
-        discoveredElements={discoveredElements}
-        comboSlots={comboSlots}
-        onDragStart={handleDragStart}
+    <DndProvider backend={HTML5Backend}>
+      <div
+        style={styles.gameContainer}
         onDragOver={handleDragOver}
-        onComboDrop={handleComboDrop}
-        onElementClick={handleElementClick}
-      />
-      <Scroll entries={storyEntries} />
-      <ActivityLog entries={activityLog} />
-    </div>
+        onDrop={handleWindowDrop}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--spacing-md)",
+          }}
+        >
+          <Inventory
+            elements={elements}
+            discoveredElements={discoveredElements}
+            onDragStart={handleDragStart}
+            onElementClick={handleElementClick}
+          />
+          <ComboBox
+            gridElements={gridElements}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onGridDrop={handleGridDrop}
+          />
+        </div>
+        <Scroll entries={storyEntries} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--spacing-md)",
+          }}
+        >
+          <ActivityLog entries={activityLog} />
+          <CharacterBox />
+        </div>
+        {selectedElement && (
+          <>
+            <svg
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+                zIndex: 998,
+              }}
+            >
+              <line
+                x1={infoPosition.elementX}
+                y1={infoPosition.elementY}
+                x2={infoPosition.x + infoPosition.infoWidth / 2 - 20}
+                y2={infoPosition.y + infoPosition.infoWidth / 2 - 20}
+                stroke="var(--border-color)"
+                strokeWidth="1"
+              />
+            </svg>
+            <div
+              style={{
+                position: "fixed",
+                left: infoPosition.x,
+                top: infoPosition.y,
+                backgroundColor: "white",
+                padding: "15px",
+                border: "var(--border)",
+                borderRadius: "4px",
+                boxShadow: "var(--shadow-md)",
+                zIndex: 999,
+                width: infoPosition.infoWidth,
+                height: infoPosition.infoWidth,
+                fontFamily: "var(--font-family-mono)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
+            >
+              <button
+                onClick={() => setSelectedElement(null)}
+                style={{
+                  position: "absolute",
+                  top: "5px",
+                  right: "5px",
+                  background: "none",
+                  border: "none",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  padding: "4px",
+                  lineHeight: "1",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                ×
+              </button>
+              <div style={{ fontSize: "32px", marginBottom: "10px" }}>
+                {selectedElement.icon}
+              </div>
+              <div
+                style={{
+                  fontSize: "var(--font-size-medium)",
+                  marginBottom: "8px",
+                }}
+              >
+                {selectedElement.name}
+              </div>
+              <div
+                style={{
+                  fontSize: "var(--font-size-medium)",
+                  marginBottom: "8px",
+                }}
+              >
+                {selectedElement.chineseName}
+              </div>
+              <div
+                style={{
+                  fontSize: "var(--font-size-small)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                {selectedElement.description}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </DndProvider>
   );
 };
 

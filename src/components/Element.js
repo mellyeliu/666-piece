@@ -11,11 +11,12 @@ const styles = {
     backgroundColor: "white",
     border: "var(--border)",
     cursor: "move",
+    zIndex: 1000,
     userSelect: "none",
-    fontFamily: "Helvetica", //"'Noto Serif TC', serif",
+    fontFamily: "var(--font-family-mono)", //"'Noto Serif TC', serif",
   },
   elementContainerHover: {
-    transform: "scale(1.05)",
+    // transform: "scale(1.02)",
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
   },
   elementContainerDragging: {
@@ -76,6 +77,7 @@ const Element = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={(e) => onClick && onClick(e)}
+      data-element-id={id}
     >
       <div style={styles.icon}>{icon}</div>
       <div style={styles.chineseName}>{chineseName}</div>
