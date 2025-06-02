@@ -187,6 +187,7 @@ const initialElements = [
     name: "Fire",
     chineseName: "火",
     icon: "🔥",
+    image: "dragon1",
     description: "The element of heat and energy",
   },
   {
@@ -194,6 +195,7 @@ const initialElements = [
     name: "Water",
     chineseName: "水",
     icon: "💧",
+    image: "butterfly",
     description: "The element of fluidity and life",
   },
   {
@@ -201,6 +203,7 @@ const initialElements = [
     name: "Earth",
     chineseName: "土",
     icon: "🌍",
+    image: "dragon2",
     description: "The element of stability and growth",
   },
   {
@@ -208,6 +211,7 @@ const initialElements = [
     name: "Air",
     chineseName: "气",
     icon: "💨",
+    image: "dragon1",
     description: "The element of movement and freedom",
   },
 ];

@@ -30,7 +30,10 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "64px",
+    backgroundImage: "url('/butterfly.png')",
+    backgroundSize: "contain",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
     marginBottom: "var(--spacing-sm)",
   },
   statsContainer: {
@@ -57,7 +60,7 @@ const CharacterBox = () => {
     <div style={styles.characterBox}>
       <div style={styles.characterTitle}>角色</div>
       <div style={styles.characterContent}>
-        <div style={styles.characterImage}>👧🏻</div>
+        <div style={styles.characterImage}></div>
         <div style={styles.statsContainer}>
           <div style={styles.statRow}>
             <span style={styles.statLabel}>Level</span>
