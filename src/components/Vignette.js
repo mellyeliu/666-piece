@@ -9,7 +9,7 @@ const styles = {
     animation: "fadeIn 1s ease-in forwards",
     position: "relative",
     width: "calc(100% - 40px)",
-    height: "100%",
+    height: "95%",
   },
   storyImage: (title) => ({
     // width: "50vh",
@@ -46,7 +46,7 @@ const styles = {
     lineHeight: "var(--line-height)",
     fontFamily: "var(--font-family-mono)",
     padding: "var(--spacing-sm)",
-    background: "white",
+    background: "#fefefe",
 
     // backgroundColor: "white",
     position: "absolute",

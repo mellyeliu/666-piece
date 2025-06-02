@@ -6,9 +6,8 @@ const styles = {
     height: "300px",
     display: "flex",
     flexDirection: "column",
-    background: "white",
-    // backgroundImage: "url('/paper-light.png')",
-    boxShadow: "var(--shadow-md)",
+    backgroundImage: "url('/paper-light.png')",
+    boxShadow: "var(--shadow-component)",
     border: "var(--border-double)",
   },
   characterTitle: {

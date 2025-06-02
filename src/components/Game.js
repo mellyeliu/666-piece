@@ -22,10 +22,11 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     gap: "var(--window-gap)",
-    backgroundImage: "url('/paper-light.png')",
-    backgroundSize: "cover",
+    backgroundImage: "url('/haze2.png')",
+    backgroundSize: "120% 120%",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
+    animation: "floatBackground 80s ease-in-out infinite",
   },
   sidePanel: {
     width: "300px",
@@ -170,6 +171,12 @@ styleSheet.textContent = `
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes floatBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 `;
 document.head.appendChild(styleSheet);

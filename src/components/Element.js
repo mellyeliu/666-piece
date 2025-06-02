@@ -8,7 +8,7 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: "#fefefe",
     border: "var(--border)",
     cursor: "move",
     zIndex: 1000,
@@ -23,8 +23,13 @@ const styles = {
     opacity: 0.5,
   },
   icon: {
-    fontSize: "32px",
+    width: "32px",
+    height: "32px",
     marginBottom: "4px",
+    backgroundImage: "url('/dragon2.png')",
+    backgroundSize: "contain",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   },
   name: {
     fontSize: "12px",
@@ -79,7 +84,7 @@ const Element = ({
       onClick={(e) => onClick && onClick(e)}
       data-element-id={id}
     >
-      <div style={styles.icon}>{icon}</div>
+      <div style={styles.icon} />
       <div style={styles.chineseName}>{chineseName}</div>
       <div style={styles.name}>{name}</div>
     </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 const styles = {
   activityLog: {
@@ -6,8 +6,9 @@ const styles = {
     height: "400px",
     display: "flex",
     flexDirection: "column",
-    background: "white",
-    boxShadow: "var(--shadow-md)",
+    backgroundImage: "url('/paper-light.png')",
+    // background: "#f7f5f1",
+    boxShadow: "var(--shadow-component)",
     border: "var(--border-double)",
   },
   activityTitle: {
@@ -32,15 +33,24 @@ const styles = {
     fontSize: "var(--font-size-small)",
     fontFamily: "var(--font-family-mono)",
     opacity: 0,
-    animation: "fadeIn 0.5s ease-in forwards",
+    transform: "translateY(10px)",
+    animation: "fadeInUp 0.5s ease-out forwards",
   },
 };
 
 const ActivityLog = ({ entries }) => {
+  const contentRef = useRef(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight;
+    }
+  }, [entries]);
+
   return (
     <div style={styles.activityLog}>
       <div style={styles.activityTitle}>活動記錄</div>
-      <div style={styles.activityContent}>
+      <div style={styles.activityContent} ref={contentRef}>
         {entries.map((entry, index) => (
           <div key={index} style={styles.activityEntry}>
             <div style={{ color: "var(--text-secondary)" }}>

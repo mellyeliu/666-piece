@@ -7,7 +7,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     backgroundImage: "url('/paper-light.png')",
-    boxShadow: "var(--shadow-md)",
+    boxShadow: "var(--shadow-component)",
     border: "var(--border-double)",
   },
   comboTitle: {
@@ -23,7 +23,8 @@ const styles = {
     position: "relative",
     backgroundImage: "radial-gradient(#bbb 1px, transparent 1px)",
     backgroundSize: "20px 20px",
-    backgroundColor: "var(--bg-white)",
+    animation: "swing 10s ease-in-out infinite",
+    transformOrigin: "top center",
   },
   element: {
     position: "absolute",
@@ -40,8 +41,13 @@ const styles = {
     fontFamily: "var(--font-family-mono)",
   },
   elementIcon: {
-    fontSize: "32px",
+    width: "32px",
+    height: "32px",
     marginBottom: "4px",
+    backgroundImage: "url('/dragon2.png')",
+    backgroundSize: "contain",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   },
   elementChineseName: {
     fontSize: "16px",
@@ -54,6 +60,16 @@ const styles = {
   },
 };
 
+// Add keyframes animation at the top level
+const swingAnimation = `
+@keyframes swing {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(0.1deg); }
+  75% { transform: rotate(-0.1deg); }
+  100% { transform: rotate(0deg); }
+}
+`;
+
 const ComboBox = ({
   gridElements = [],
   onDragStart,
@@ -61,37 +77,40 @@ const ComboBox = ({
   onGridDrop,
 }) => {
   return (
-    <div style={styles.comboBox}>
-      <div style={styles.comboTitle}>元素網格</div>
-      <div
-        style={styles.gridContainer}
-        onDragOver={onDragOver}
-        onDrop={(e) => {
-          e.preventDefault();
-          const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          onGridDrop(e, x, y);
-        }}
-      >
-        {gridElements.map((element, index) => (
-          <div
-            key={index}
-            style={{
-              ...styles.element,
-              left: element.x,
-              top: element.y,
-            }}
-            draggable
-            onDragStart={(e) => onDragStart(e, element)}
-          >
-            <div style={styles.elementIcon}>{element.icon}</div>
-            <div style={styles.elementChineseName}>{element.chineseName}</div>
-            <div style={styles.elementName}>{element.name}</div>
-          </div>
-        ))}
+    <>
+      <style>{swingAnimation}</style>
+      <div style={styles.comboBox}>
+        <div style={styles.comboTitle}>元素網格</div>
+        <div
+          style={styles.gridContainer}
+          onDragOver={onDragOver}
+          onDrop={(e) => {
+            e.preventDefault();
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            onGridDrop(e, x, y);
+          }}
+        >
+          {gridElements.map((element, index) => (
+            <div
+              key={index}
+              style={{
+                ...styles.element,
+                left: element.x,
+                top: element.y,
+              }}
+              draggable
+              onDragStart={(e) => onDragStart(e, element)}
+            >
+              <div style={styles.elementIcon}></div>
+              <div style={styles.elementChineseName}>{element.chineseName}</div>
+              <div style={styles.elementName}>{element.name}</div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

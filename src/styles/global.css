@@ -1,10 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&family=Syne+Mono&family=Xanh+Mono:ital@0;1&family=Zen+Maru+Gothic&family=Zhi+Mang+Xing&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Hachi+Maru+Pop&family=Kaisei+Decol&family=Noto+Serif+TC:wght@200..900&family=Shippori+Mincho&family=Shippori+Mincho+B1&family=Syne+Mono&family=Xanh+Mono:ital@0;1&family=Zen+Kaku+Gothic+New&family=Zen+Maru+Gothic&family=Zen+Old+Mincho&family=Zhi+Mang+Xing&display=swap");
+
+@font-face {
+  font-family: "PMingLiU-ExtB";
+  src: url("/PMingLiU-ExtB.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
 
 :root {
   /* Colors */
   --bg-primary: #dedcda;
   --bg-secondary: #d4d2cb;
-  --bg-white: #fbfbfb;
+  --bg-white: #f9f9f7;
   --text-primary: #333333;
   --text-secondary: #666666;
   --border-color: #878787;
@@ -37,8 +44,9 @@
   --border-light: var(--border-width) var(--border-style) var(--border-light);
 
   /* Shadows */
-  --shadow-sm: 2px 0 5px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0px 0 0px rgba(0, 0, 0, 0);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0);
+  --shadow-component: 0 4px 12px rgba(0, 0, 0, 0);
 
   /* Layout */
   --sidebar-width: 230px;
@@ -50,6 +58,17 @@
   from {
     opacity: 0;
     transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;

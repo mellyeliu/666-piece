@@ -7,9 +7,11 @@ const styles = {
     height: "calc(53vh - var(--spacing-md) * 2)",
     display: "flex",
     flexDirection: "column",
+    backgroundImage: "url('/paper-light.png')",
+
     // backgroundImage: "url('/paper-light.png')",
-    backgroundColor: "var(--bg-white)",
-    boxShadow: "var(--shadow-sm)",
+    // backgroundColor: "var(--bg-white)",
+    boxShadow: "var(--shadow-component)",
     border: "var(--border-double)",
   },
   title: {
