@@ -563,7 +563,7 @@ const Game = () => {
         icon: "��",
         image: "scroll",
         description:
-          "I grew up in a town called Markham, Ontario. My parents were studying in Canada when they were granted asylum visas due to 天安门广场 in 1989.",
+          "I grew up in a town called Markham, Ontario. I was on the internet, school. My parents were studying in Canada when they were granted asylum visas due to 天安门广场 in 1989.",
       },
       "internet-east666": {
         id: "internet-east",

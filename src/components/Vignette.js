@@ -136,6 +136,70 @@ const Vignette = ({
           description: "The place of learning and growth",
         },
       ],
+      internet: [
+        {
+          id: "internet",
+          name: "Internet",
+          chineseName: "网络",
+          icon: "🌐",
+          image: "scroll",
+          description: "The digital bridge between cultures",
+        },
+      ],
+      school: [
+        {
+          id: "school",
+          name: "School",
+          chineseName: "学校",
+          icon: "🏫",
+          image: "scroll",
+          description: "The place of learning and growth",
+        },
+      ],
+      mom: [
+        {
+          id: "mom",
+          name: "Mom",
+          chineseName: "妈妈",
+          icon: "👩",
+          image: "scroll",
+          description:
+            "My mom tried to convert to Catholicism but kept falling asleep during Bible class.",
+        },
+      ],
+      grandma: [
+        {
+          id: "grandma",
+          name: "Grandma",
+          chineseName: "奶奶",
+          icon: "👵",
+          image: "scroll",
+          description:
+            "My grandma was bubbly and fun. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
+        },
+      ],
+      bullying: [
+        {
+          id: "bullying",
+          name: "Bullying",
+          chineseName: "霸凌",
+          icon: "😢",
+          image: "scroll",
+          description:
+            "The challenges of being different in a Catholic school environment.",
+        },
+      ],
+      food: [
+        {
+          id: "food",
+          name: "Food",
+          chineseName: "食物",
+          icon: "🍳",
+          image: "scroll",
+          description:
+            "My grandma was bubbly and fun. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
+        },
+      ],
       "internet-east": [
         {
           id: "online_community",
@@ -220,17 +284,6 @@ const Vignette = ({
             "The challenges of being different in a Catholic school environment.",
         },
       ],
-      grandma: [
-        {
-          id: "food",
-          name: "Food",
-          chineseName: "食物",
-          icon: "🍳",
-          image: "scroll",
-          description:
-            "My grandma was bubbly and fun. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
-        },
-      ],
       "food-east": [
         {
           id: "hotpot",
@@ -267,13 +320,9 @@ const Vignette = ({
     return null;
   };
 
-  const handleImageClick = (e) => {
-    console.log("Image clicked:", {
-      title,
-      clickedCount: clickedElements.length,
-    });
-
-    const newElement = getNewElement(title, clickedElements.length);
+  const handleWordClick = (word) => {
+    console.log("Word clicked:", word);
+    const newElement = getNewElement(word, clickedElements.length);
     console.log("New element from getNewElement:", newElement);
 
     if (newElement) {
@@ -288,22 +337,47 @@ const Vignette = ({
         );
       }
     } else {
-      console.log("No more elements to discover for this vignette");
+      console.log("No more elements to discover for this word");
     }
+  };
+
+  const renderClickableDescription = () => {
+    const words = description.split(" ");
+    return words.map((word, index) => {
+      const lowerWord = word.toLowerCase().replace(/[.,!?]/g, "");
+      if (
+        [
+          "dad",
+          "grandma",
+          "mom",
+          "bullying",
+          "food",
+          "internet",
+          "school",
+        ].includes(lowerWord)
+      ) {
+        return (
+          <span
+            key={index}
+            onClick={() => handleWordClick(lowerWord)}
+            style={{
+              cursor: "pointer",
+              fontWeight: "bold",
+              color: "black",
+            }}
+          >
+            {word}{" "}
+          </span>
+        );
+      }
+      return <span key={index}>{word} </span>;
+    });
   };
 
   return (
     <div style={styles.storyEntry}>
-      <div style={styles.storyImage(title)} onClick={handleImageClick}>
-        <div
-          style={styles.clickableArea}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleImageClick(e);
-          }}
-        />
-      </div>
-      <div style={storyDescriptionStyle}>{description}</div>
+      <div style={styles.storyImage(title)} />
+      <div style={storyDescriptionStyle}>{renderClickableDescription()}</div>
       <div style={storyTextStyle}>
         <div style={styles.storyTitle}>{chineseTitle}</div>
       </div>
