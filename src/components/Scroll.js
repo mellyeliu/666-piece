@@ -74,7 +74,9 @@ const swingAnimation = `
 }
 `;
 
-const Scroll = ({ entries = [] }) => {
+const Scroll = ({ entries = [], onDiscoverElement }) => {
+  console.log("Scroll component props:", { entries, onDiscoverElement });
+
   const contentRef = useRef(null);
 
   useEffect(() => {
@@ -134,12 +136,13 @@ const Scroll = ({ entries = [] }) => {
         >
           {contentToRender.map((entry, index) => (
             <Vignette
-              key={index}
-              title={entry.title}
+              key={entry.title}
+              title={entry.title.toLowerCase()}
               chineseTitle={entry.chineseTitle}
               description={entry.description}
               image={entry.image}
               index={index}
+              onDiscoverElement={onDiscoverElement}
             />
           ))}
         </div>

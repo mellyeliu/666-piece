@@ -183,36 +183,20 @@ document.head.appendChild(styleSheet);
 
 const initialElements = [
   {
-    id: "fire",
-    name: "Fire",
-    chineseName: "火",
-    icon: "🔥",
+    id: "east666",
+    name: "East",
+    chineseName: "东",
+    icon: "🌅",
     image: "dragon1",
-    description: "The element of heat and energy",
+    description: "The eastern heritage and traditions",
   },
   {
-    id: "water",
-    name: "Water",
-    chineseName: "水",
-    icon: "💧",
-    image: "butterfly",
-    description: "The element of fluidity and life",
-  },
-  {
-    id: "earth",
-    name: "Earth",
-    chineseName: "土",
-    icon: "🌍",
+    id: "west666",
+    name: "West",
+    chineseName: "西",
+    icon: "🌇",
     image: "dragon2",
-    description: "The element of stability and growth",
-  },
-  {
-    id: "air",
-    name: "Air",
-    chineseName: "气",
-    icon: "💨",
-    image: "dragon1",
-    description: "The element of movement and freedom",
+    description: "The western culture and opportunities",
   },
 ];
 
@@ -237,7 +221,7 @@ const Game = () => {
       return [
         {
           message:
-            "Welcome to 水彩 Storybook! You can start by dragging the elements onto the canvas... Beware. Everything is a placeholder right now!",
+            "Welcome to 水彩 Storybook! You can start by dragging the elements onto the canvas.",
           timestamp: "12:00:00 AM",
         },
       ];
@@ -475,6 +459,8 @@ const Game = () => {
     e.preventDefault();
     const droppedElement = JSON.parse(e.dataTransfer.getData("text/plain"));
 
+    console.log("Combo drop:", { droppedElement, slotIndex });
+
     // Update the combo slot
     setGridElements((prev) => {
       const newSlots = [...prev];
@@ -494,8 +480,11 @@ const Game = () => {
     newSlots[slotIndex] = droppedElement;
 
     if (newSlots[0] && newSlots[1]) {
+      console.log("Attempting combo box combination:", newSlots);
       const newElement = combineElements(newSlots[0], newSlots[1]);
+
       if (newElement) {
+        console.log("Combo box combination successful:", newElement);
         // Add to discovered elements if not already there
         if (!discoveredElements.some((el) => el.id === newElement.id)) {
           setDiscoveredElements((prev) => [...prev, newElement]);
@@ -508,18 +497,20 @@ const Game = () => {
               chineseTitle: newElement.chineseName,
               description: generateStoryDescription(newElement),
               icon: newElement.icon,
+              imageKey: newElement.image,
             },
           ]);
 
           // Add to activity log
           addActivityLog(
-            `Created new element: ${newElement.name} (${newElement.chineseName})`
+            `Created new element: ${newElement.name} (${newElement.chineseName}) from combining ${newSlots[0].name} and ${newSlots[1].name}`
           );
         }
 
         // Clear the combo slots
         setGridElements([null, null]);
       } else {
+        console.log("No valid combo box combination found");
         addActivityLog("No combination found between these elements");
       }
     }
@@ -527,78 +518,123 @@ const Game = () => {
 
   const generateStoryDescription = (element) => {
     const stories = {
-      steam: `In the ancient scrolls of alchemy, the meeting of fire and water was considered a sacred moment. When the fierce heat of fire (火) embraces the gentle flow of water (水), a new form emerges - steam (蒸汽). This ethereal substance, `,
-      mud: `The earth (土) and water (水) dance together in an eternal embrace, creating mud (泥) - the primordial substance from which life springs forth. This humble mixture, often overlooked, holds within it the secrets of creation. `,
-      dust: `When the wind (气) caresses the earth (土), it lifts tiny particles into the air, creating dust (灰尘). This seemingly insignificant phenomenon was considered by the ancients to be a metaphor for the cycle of life and death.`,
-      lava: `The heart of the earth (土) meets the breath of fire (火), giving birth to lava (岩浆).  When the fierce heat of fire (火) embraces the gentle flow of water (水), a new form emerges `,
+      identity: `The journey of finding oneself between two cultures is never easy. When roots (根) meet language (语), a new identity (身份) emerges - one that must navigate the delicate balance between honoring tradition and embracing change.`,
+      tradition: `The roots (根) of family history intertwine with memories (忆) of the past, creating traditions (传统) that serve as anchors in a sea of change. These customs become the threads that connect generations across oceans and time.`,
+      ambition: `When dreams (梦) take root (根) in fertile soil, ambition (抱负) grows. It's the drive to succeed not just for oneself, but for the family that sacrificed so much to make these dreams possible.`,
+      stories: `Language (语) carries memories (忆) like vessels across time, transforming them into stories (故事) that bridge the gap between generations. These tales become the currency of cultural exchange.`,
+      opportunity: `The language (语) of dreams (梦) speaks of opportunity (机会) - the chance to build a better life while honoring the sacrifices of those who came before.`,
+      legacy: `Memories (忆) and dreams (梦) combine to create a legacy (传承) - the responsibility to honor the past while building a future that bridges two worlds.`,
+      belonging: `Identity (身份) and tradition (传统) merge to create a sense of belonging (归属) - the feeling of being at home in both cultures, yet uniquely positioned between them.`,
+      success: `Ambition (抱负) meets opportunity (机会) to create success (成功) - not just in material terms, but in the fulfillment of the immigrant dream through perseverance and hard work.`,
+      wisdom: `Stories (故事) and legacy (传承) combine to form wisdom (智慧) - the understanding that comes from learning from both cultures and finding value in each.`,
+      harmony: `Belonging (归属) and success (成功) together create harmony (和谐) - the delicate balance between preserving cultural heritage and embracing new opportunities.`,
+      enlightenment: `Wisdom (智慧) and harmony (和谐) culminate in enlightenment (觉悟) - the profound understanding that comes from fully embracing the richness of both cultures.`,
     };
     return stories[element.id] || element.description;
   };
 
   const combineElements = (element1, element2) => {
-    const elements = [element1.id, element2.id].sort();
-    const combinationKey = elements.join("-");
+    // Make sure we have valid elements
+    if (!element1 || !element2) {
+      console.error("Invalid elements:", { element1, element2 });
+      return null;
+    }
+
+    // Get the IDs
+    const id1 = element1.id || element1;
+    const id2 = element2.id || element2;
+
+    // Create both possible combination keys
+    const combinationKey1 = `${id1}-${id2}`;
+    const combinationKey2 = `${id2}-${id1}`;
+
+    console.log("Combining elements:", {
+      element1: id1,
+      element2: id2,
+      combinationKey1,
+      combinationKey2,
+    });
 
     const combinations = {
-      "fire-water": {
-        id: "steam",
-        name: "Steam",
-        chineseName: "蒸汽蒸汽",
-        icon: "💨",
-        description: "The result of heat meeting water",
+      "east666-west666": {
+        id: "melissa",
+        name: "Melly",
+        chineseName: "思源",
+        icon: "��",
+        image: "scroll",
+        description:
+          "I grew up in a town called Markham, Ontario. My parents were studying in Canada when they were granted asylum visas due to 天安门广场 in 1989.",
       },
-      "water-fire": {
-        id: "steam",
-        name: "Steam",
-        chineseName: "蒸汽灰尘汽",
-        icon: "💨",
-        description: "The result of heat meeting water",
+      "internet-east666": {
+        id: "internet-east",
+        name: "Taobao",
+        chineseName: "东方网络",
+        icon: "🌐",
+        image: "scroll",
+        description:
+          "A partner of mine introduced me to fashion replicas, purchased through Taobao.",
       },
-      "water-earth": {
-        id: "mud",
-        name: "Mud",
-        chineseName: "泥汽蒸泥",
-        icon: "🌊",
-        description: "The mixture of earth and water",
+      "internet-west666": {
+        id: "internet-west",
+        name: "Neopets",
+        chineseName: "西方网络",
+        icon: "🌐",
+        image: "scroll",
+        description:
+          "My dad used to help me cheat on Maths Nightmares. My life goal at the time to make it on the leaderboard.",
       },
-      "earth-water": {
-        id: "mud",
-        name: "Mud",
-        chineseName: "泥蒸泥",
-        icon: "🌊",
-        description: "The mixture of earth and water",
+      "school-east666": {
+        id: "school-east",
+        name: "Abacus",
+        chineseName: "东方学校",
+        icon: "🏫",
+        image: "scroll",
+        description:
+          "My grandma would write out the answers to my abacus sums and hide it from my mom so I'd have more time to play outside.",
       },
-      "earth-air": {
-        id: "dust",
-        name: "Dust",
-        chineseName: "灰尘汽蒸汽",
-        icon: "💨",
-        description: "Air carrying earth particles",
+      "school-west666": {
+        id: "school-west",
+        name: "Catholic School",
+        chineseName: "西方学校",
+        icon: "🏫",
+        image: "scroll",
+        description:
+          "Back then, only public Catholic schools had Kindergarten. My parents tried to convert, but my mom kept falling asleep during Bible class.",
       },
-      "air-earth": {
-        id: "dust",
-        name: "Dust",
-        chineseName: "灰尘蒸汽",
-        icon: "💨",
-        description: "Air carrying earth particles",
+      "food-east666": {
+        id: "hotpot",
+        name: "Hotpot",
+        chineseName: "火锅",
+        icon: "🍲",
+        image: "scroll",
+        description:
+          "Gathering around a bubbling pot of soup, sharing stories and dipping fresh ingredients into the communal broth.",
       },
-      "fire-earth": {
-        id: "lava",
-        name: "Lava",
-        chineseName: "岩尘汽汽浆",
-        icon: "🌋",
-        description: "Molten earth created by fire",
+      "food-west666": {
+        id: "mcdonalds",
+        name: "McDonald's",
+        chineseName: "麦当劳",
+        icon: "🍔",
+        image: "scroll",
+        description:
+          "The golden arches became a symbol of western culture, where we'd celebrate small victories with Happy Meals.",
       },
-      "earth-fire": {
-        id: "lava",
-        name: "Lava",
-        chineseName: "岩浆",
-        icon: "🌋",
-        description: "Molten earth created by fire",
+      "mom-school": {
+        id: "gifted",
+        name: "Gifted",
+        chineseName: "天才",
+        icon: "🎯",
+        image: "scroll",
+        description:
+          "My mom trained me for the gifted screening, making me practice pattern recognition and spatial reasoning tests every day after school.",
       },
     };
 
-    return combinations[combinationKey] || null;
+    // Try both possible combination keys
+    const result =
+      combinations[combinationKey1] || combinations[combinationKey2];
+    console.log("Combination result:", result);
+    return result || null;
   };
 
   const handleWindowDrop = (e) => {
@@ -610,6 +646,8 @@ const Game = () => {
     const droppedElement = JSON.parse(e.dataTransfer.getData("text/plain"));
     const isMove = e.dataTransfer.getData("isMove") === "true";
 
+    console.log("Grid drop:", { droppedElement, x, y, isMove });
+
     // Check for nearby elements to combine with
     const nearbyElements = gridElements.filter((element) => {
       const dx = element.x - x;
@@ -618,11 +656,15 @@ const Game = () => {
       return distance < 60; // 60px threshold for combination
     });
 
+    console.log("Nearby elements:", nearbyElements);
+
     if (nearbyElements.length > 0) {
       const targetElement = nearbyElements[0];
+      console.log("Attempting combination:", { targetElement, droppedElement });
       const newElement = combineElements(targetElement, droppedElement);
 
       if (newElement) {
+        console.log("Combination successful:", newElement);
         // Add to discovered elements if not already there
         if (!discoveredElements.some((el) => el.id === newElement.id)) {
           setDiscoveredElements((prev) => [...prev, newElement]);
@@ -635,6 +677,7 @@ const Game = () => {
               chineseTitle: newElement.chineseName,
               description: generateStoryDescription(newElement),
               icon: newElement.icon,
+              imageKey: newElement.image,
             },
           ]);
 
@@ -643,14 +686,17 @@ const Game = () => {
             `Created new element: ${newElement.name} (${newElement.chineseName}) from combining ${targetElement.name} and ${droppedElement.name}`
           );
 
-          // Remove the combined elements
-          setGridElements((prev) =>
-            prev.filter(
+          // Remove the combined elements and add the new one
+          setGridElements((prev) => {
+            const filtered = prev.filter(
               (el) => el.id !== targetElement.id && el.id !== droppedElement.id
-            )
-          );
+            );
+            return [...filtered, { ...newElement, x, y }];
+          });
         }
         return;
+      } else {
+        console.log("No valid combination found");
       }
     }
 
@@ -666,6 +712,56 @@ const Game = () => {
           `Added ${droppedElement.name} (${droppedElement.chineseName}) to the grid`
         );
       }
+    }
+  };
+
+  const handleDiscoverElement = (newElement) => {
+    console.log("handleDiscoverElement called with:", newElement);
+
+    // Add to both elements and discoveredElements if not already there
+    if (!elements.some((el) => el.id === newElement.id)) {
+      console.log("Adding new element to elements");
+      setElements((prev) => [...prev, newElement]);
+    }
+
+    if (!discoveredElements.some((el) => el.id === newElement.id)) {
+      console.log("Adding new element to discoveredElements");
+      setDiscoveredElements((prev) => [...prev, newElement]);
+
+      // Only create story entries for elements that should have vignettes
+      const shouldCreateVignette = [
+        "internet-east",
+        "internet-west",
+        "school-east",
+        "school-west",
+        "dad",
+        "grandma",
+        "mom",
+        "bullying",
+        "hotpot",
+        "mcdonalds",
+      ].includes(newElement.id);
+
+      if (shouldCreateVignette) {
+        console.log("Creating vignette for element:", newElement.id);
+        setStoryEntries((prev) => [
+          ...prev,
+          {
+            title: newElement.name,
+            chineseTitle: newElement.chineseName,
+            description: newElement.description,
+            icon: newElement.icon,
+            imageKey: newElement.image,
+          },
+        ]);
+      }
+
+      // Add to activity log
+      addActivityLog(
+        `Discovered new element: ${newElement.name} (${newElement.chineseName})`
+      );
+    } else {
+      console.log("Element already discovered:", newElement.id);
     }
   };
 
@@ -694,9 +790,13 @@ const Game = () => {
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onGridDrop={handleGridDrop}
+            onComboDrop={handleComboDrop}
           />
         </div>
-        <Scroll entries={storyEntries} />
+        <Scroll
+          entries={storyEntries}
+          onDiscoverElement={handleDiscoverElement}
+        />
         <div
           style={{
             display: "flex",
@@ -705,7 +805,10 @@ const Game = () => {
           }}
         >
           <ActivityLog entries={activityLog} />
-          <CharacterBox />
+          <CharacterBox
+            discoveredElements={discoveredElements}
+            storyEntries={storyEntries}
+          />
         </div>
         {selectedElement && (
           <>

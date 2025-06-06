@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 const styles = {
   storyEntry: {
@@ -14,11 +14,12 @@ const styles = {
   storyImage: (title) => ({
     // width: "50vh",
     height: "100%",
-    backgroundImage: `url('/${title}.png')`,
+    backgroundImage: `url('scroll/${title}.png')`,
     backgroundSize: "contain",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
     position: "relative",
+    cursor: "pointer",
     // marginTop: "20vh",
     // marginLeft: "-5vh",
   }),
@@ -51,17 +52,58 @@ const styles = {
     // backgroundColor: "white",
     position: "absolute",
     right: "20px",
-    bottom: "150px",
-    width: "30vh",
+    bottom: "20px",
+    width: "25vh",
     border: "var(--border)",
+    maxHeight: "120px",
+    overflowY: "auto",
   },
   storyDescriptionLeft: {
     right: "auto",
     left: "20px",
   },
+  cursor: {
+    display: "inline-block",
+    width: "2px",
+    height: "1em",
+    backgroundColor: "black",
+    marginLeft: "2px",
+    animation: "blink 1s step-end infinite",
+  },
+  clickableArea: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "50%",
+    cursor: "pointer",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    opacity: 0,
+    transition: "opacity 0.2s",
+    "&:hover": {
+      opacity: 0.2,
+    },
+  },
 };
 
-const Vignette = ({ title, chineseTitle, description, index = 0 }) => {
+// Add cursor blink animation
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+`;
+document.head.appendChild(styleSheet);
+
+const Vignette = ({
+  title,
+  chineseTitle,
+  description,
+  index = 0,
+  onDiscoverElement,
+}) => {
+  const [clickedElements, setClickedElements] = useState([]);
   const isEven = index % 2 === 0;
 
   const storyTextStyle = {
@@ -74,9 +116,193 @@ const Vignette = ({ title, chineseTitle, description, index = 0 }) => {
     ...(isEven ? styles.storyDescriptionLeft : {}),
   };
 
+  const getNewElement = (title, clickCount) => {
+    const elements = {
+      melly: [
+        {
+          id: "internet",
+          name: "Internet",
+          chineseName: "网络",
+          icon: "🌐",
+          image: "scroll",
+          description: "The digital bridge between cultures",
+        },
+        {
+          id: "school",
+          name: "School",
+          chineseName: "学校",
+          icon: "🏫",
+          image: "scroll",
+          description: "The place of learning and growth",
+        },
+      ],
+      "internet-east": [
+        {
+          id: "online_community",
+          name: "Online Community",
+          chineseName: "网络社区",
+          icon: "👥",
+          image: "scroll",
+          description: "Finding connection in digital spaces",
+        },
+      ],
+      "internet-west": [
+        {
+          id: "dad",
+          name: "Dad",
+          chineseName: "爸爸",
+          icon: "👨",
+          image: "scroll",
+          description:
+            "He was a computer engineer. He was always in his room, reading light novels or eating sunflower seeds. I learned chess, bike riding.",
+        },
+      ],
+      "school-east": [
+        {
+          id: "grandma",
+          name: "Grandma",
+          chineseName: "奶奶",
+          icon: "👵",
+          image: "scroll",
+          description:
+            "My grandma would write out the answers to my abacus sums and hide it from my mom so I'd have more time to play outside.",
+        },
+      ],
+      "school-west": [
+        {
+          id: "new_opportunities",
+          name: "New Opportunities",
+          chineseName: "新机会",
+          icon: "✨",
+          image: "scroll",
+          description: "Opening doors to future possibilities",
+        },
+      ],
+      neopets: [
+        {
+          id: "dad",
+          name: "Dad",
+          chineseName: "爸爸",
+          icon: "👨",
+          image: "scroll",
+          description:
+            "He was a computer engineer. He was always in his room, reading light novels or eating sunflower seeds. I learned chess, bike riding.",
+        },
+      ],
+      abacus: [
+        {
+          id: "grandma",
+          name: "Grandma",
+          chineseName: "奶奶",
+          icon: "👵",
+          image: "scroll",
+          description:
+            "My grandma was bubbly and fun. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
+        },
+      ],
+      "catholic school": [
+        {
+          id: "mom",
+          name: "Mom",
+          chineseName: "妈妈",
+          icon: "👩",
+          image: "scroll",
+          description:
+            "My mom tried to convert to Catholicism but kept falling asleep during Bible class.",
+        },
+        {
+          id: "bullying",
+          name: "Bullying",
+          chineseName: "霸凌",
+          icon: "😢",
+          image: "scroll",
+          description:
+            "The challenges of being different in a Catholic school environment.",
+        },
+      ],
+      grandma: [
+        {
+          id: "food",
+          name: "Food",
+          chineseName: "食物",
+          icon: "🍳",
+          image: "scroll",
+          description:
+            "My grandma was bubbly and fun. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
+        },
+      ],
+      "food-east": [
+        {
+          id: "hotpot",
+          name: "Hotpot",
+          chineseName: "火锅",
+          icon: "🍲",
+          image: "scroll",
+          description:
+            "Gathering around a bubbling pot of soup, sharing stories and dipping fresh ingredients into the communal broth.",
+        },
+      ],
+      "food-west": [
+        {
+          id: "mcdonalds",
+          name: "McDonald's",
+          chineseName: "麦当劳",
+          icon: "🍔",
+          image: "scroll",
+          description:
+            "The golden arches became a symbol of western culture, where we'd celebrate small victories with Happy Meals.",
+        },
+      ],
+    };
+
+    console.log("Looking for elements with title:", title);
+
+    // Convert title to lowercase for case-insensitive comparison
+    const titleKey = title.toLowerCase();
+    const availableElements = elements[titleKey] || [];
+
+    if (clickCount < availableElements.length) {
+      return availableElements[clickCount];
+    }
+    return null;
+  };
+
+  const handleImageClick = (e) => {
+    console.log("Image clicked:", {
+      title,
+      clickedCount: clickedElements.length,
+    });
+
+    const newElement = getNewElement(title, clickedElements.length);
+    console.log("New element from getNewElement:", newElement);
+
+    if (newElement) {
+      console.log("Creating new element:", newElement);
+      if (typeof onDiscoverElement === "function") {
+        onDiscoverElement(newElement);
+        setClickedElements((prev) => [...prev, newElement.id]);
+      } else {
+        console.error(
+          "onDiscoverElement is not a function:",
+          onDiscoverElement
+        );
+      }
+    } else {
+      console.log("No more elements to discover for this vignette");
+    }
+  };
+
   return (
     <div style={styles.storyEntry}>
-      <div style={styles.storyImage(title)} />
+      <div style={styles.storyImage(title)} onClick={handleImageClick}>
+        <div
+          style={styles.clickableArea}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleImageClick(e);
+          }}
+        />
+      </div>
       <div style={storyDescriptionStyle}>{description}</div>
       <div style={storyTextStyle}>
         <div style={styles.storyTitle}>{chineseTitle}</div>

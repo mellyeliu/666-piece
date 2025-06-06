@@ -26,7 +26,7 @@ const styles = {
     width: "32px",
     height: "32px",
     marginBottom: "4px",
-    backgroundImage: (image) => `url('/${image}.png')`,
+    backgroundImage: "url('/dragon2.png')",
     backgroundSize: "contain",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -47,7 +47,6 @@ const Element = ({
   name,
   chineseName,
   icon,
-  image,
   onDragStart,
   onClick,
   description,
@@ -58,9 +57,9 @@ const Element = ({
   const handleDragStart = (e) => {
     e.dataTransfer.setData(
       "text/plain",
-      JSON.stringify({ id, name, chineseName, icon, image, description })
+      JSON.stringify({ id, name, chineseName, icon, description })
     );
-    onDragStart(e, { id, name, chineseName, icon, image, description });
+    onDragStart(e, { id, name, chineseName, icon, description });
     setIsDragging(true);
   };
 
@@ -85,9 +84,7 @@ const Element = ({
       onClick={(e) => onClick && onClick(e)}
       data-element-id={id}
     >
-      <div
-        style={{ ...styles.icon, backgroundImage: `url('/${image}.png')` }}
-      />
+      <div style={styles.icon} />
       <div style={styles.chineseName}>{chineseName}</div>
       <div style={styles.name}>{name}</div>
     </div>

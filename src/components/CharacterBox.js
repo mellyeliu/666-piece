@@ -55,7 +55,27 @@ const styles = {
   },
 };
 
-const CharacterBox = () => {
+const CharacterBox = ({ discoveredElements = [], storyEntries = [] }) => {
+  // Calculate total possible combinations (including second-order)
+  const totalCombinations = 20; // Total number of possible combinations
+  const totalStories = 11; // Total number of possible story entries
+  const initialElementIds = ["roots", "language", "memory", "dreams"];
+
+  // Calculate level based on progress
+  const calculateLevel = () => {
+    const progress = (discoveredElements.length / 15) * 100; // 15 is total possible elements (4 initial + 11 combinations)
+    if (progress >= 90) return 5;
+    if (progress >= 70) return 4;
+    if (progress >= 50) return 3;
+    if (progress >= 30) return 2;
+    return 1;
+  };
+
+  // Count only the discovered combinations (elements that aren't initial elements)
+  const discoveredCombinations = discoveredElements.filter(
+    (element) => !initialElementIds.includes(element.id)
+  ).length;
+
   return (
     <div style={styles.characterBox}>
       <div style={styles.characterTitle}>角色</div>
@@ -64,19 +84,23 @@ const CharacterBox = () => {
         <div style={styles.statsContainer}>
           <div style={styles.statRow}>
             <span style={styles.statLabel}>Level</span>
-            <span style={styles.statValue}>1</span>
+            <span style={styles.statValue}>{calculateLevel()}</span>
           </div>
           <div style={styles.statRow}>
             <span style={styles.statLabel}>Elements</span>
-            <span style={styles.statValue}>4/8</span>
+            <span style={styles.statValue}>{discoveredElements.length}/15</span>
           </div>
           <div style={styles.statRow}>
             <span style={styles.statLabel}>Combinations</span>
-            <span style={styles.statValue}>2/6</span>
+            <span style={styles.statValue}>
+              {discoveredCombinations}/{totalCombinations}
+            </span>
           </div>
           <div style={styles.statRow}>
             <span style={styles.statLabel}>Stories</span>
-            <span style={styles.statValue}>2/6</span>
+            <span style={styles.statValue}>
+              {storyEntries.length}/{totalStories}
+            </span>
           </div>
         </div>
       </div>
