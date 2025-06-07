@@ -112,7 +112,7 @@ const Scroll = ({ entries = [], onDiscoverElement }) => {
       title: "welcome",
       chineseTitle: "思源",
       description:
-        "A story of identities and beginnings. This is a placeholder! Loading...",
+        "A story of beginnings and endings and everything in between. Loading...",
       image: "welcome",
     },
     ...entries,

@@ -40,6 +40,17 @@ const styles = {
     textAlign: "center",
     marginBottom: "2px",
   },
+  elementImage: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "32px",
+    backgroundSize: "contain",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    // filter: "grayscale(100%)",
+  },
 };
 
 const Element = ({
@@ -81,10 +92,9 @@ const Element = ({
       onDragEnd={handleDragEnd}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={(e) => onClick && onClick(e)}
       data-element-id={id}
     >
-      <div style={styles.icon} />
+      <div style={styles.elementImage}>{icon}</div>
       <div style={styles.chineseName}>{chineseName}</div>
       <div style={styles.name}>{name}</div>
     </div>

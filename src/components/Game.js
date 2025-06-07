@@ -184,17 +184,17 @@ document.head.appendChild(styleSheet);
 const initialElements = [
   {
     id: "east666",
-    name: "East",
-    chineseName: "东",
-    icon: "🌅",
+    name: "666",
+    chineseName: "六",
+    icon: "🇨🇳",
     image: "dragon1",
     description: "The eastern heritage and traditions",
   },
   {
     id: "west666",
-    name: "West",
-    chineseName: "西",
-    icon: "🌇",
+    name: "666",
+    chineseName: "六",
+    icon: "🇨🇦",
     image: "dragon2",
     description: "The western culture and opportunities",
   },
@@ -560,10 +560,10 @@ const Game = () => {
         id: "melissa",
         name: "Melly",
         chineseName: "思源",
-        icon: "��",
+        icon: "👧🏻",
         image: "scroll",
         description:
-          "I grew up in a town called Markham, Ontario. I was on the internet, school. My parents were studying in Canada when they were granted asylum visas due to 天安门广场 in 1989.",
+          "I grew up in a town called Markham, Ontario. My parents were studying in Canada when they were granted asylum visas due to 天安门广场 in 1989. I spent most of the time on the internet...",
       },
       "internet-east666": {
         id: "internet-east",
@@ -578,7 +578,7 @@ const Game = () => {
         id: "internet-west",
         name: "Neopets",
         chineseName: "西方网络",
-        icon: "🌐",
+        icon: "🐹",
         image: "scroll",
         description:
           "My dad used to help me cheat on Maths Nightmares. My life goal at the time to make it on the leaderboard.",
@@ -587,7 +587,7 @@ const Game = () => {
         id: "school-east",
         name: "Abacus",
         chineseName: "东方学校",
-        icon: "🏫",
+        icon: "🧮",
         image: "scroll",
         description:
           "My grandma would write out the answers to my abacus sums and hide it from my mom so I'd have more time to play outside.",
@@ -596,7 +596,7 @@ const Game = () => {
         id: "school-west",
         name: "Catholic School",
         chineseName: "西方学校",
-        icon: "🏫",
+        icon: "⛪",
         image: "scroll",
         description:
           "Back then, only public Catholic schools had Kindergarten. My parents tried to convert, but my mom kept falling asleep during Bible class.",
@@ -612,7 +612,7 @@ const Game = () => {
       },
       "food-west666": {
         id: "mcdonalds",
-        name: "McDonald's",
+        name: "McDonalds",
         chineseName: "麦当劳",
         icon: "🍔",
         image: "scroll",
@@ -623,7 +623,7 @@ const Game = () => {
         id: "gifted",
         name: "Gifted",
         chineseName: "天才",
-        icon: "🎯",
+        icon: "🌟",
         image: "scroll",
         description:
           "My mom trained me for the gifted screening, making me practice pattern recognition and spatial reasoning tests every day after school.",
@@ -641,7 +641,12 @@ const Game = () => {
     // Remove the activity log position update since we don't need it anymore
   };
 
-  const handleGridDrop = (e, x, y) => {
+  const handleGridDrop = (e, x, y, isClear = false) => {
+    if (isClear) {
+      setGridElements([]);
+      return;
+    }
+
     e.preventDefault();
     const droppedElement = JSON.parse(e.dataTransfer.getData("text/plain"));
     const isMove = e.dataTransfer.getData("isMove") === "true";
@@ -740,6 +745,14 @@ const Game = () => {
         "bullying",
         "hotpot",
         "mcdonalds",
+        "gender-east",
+        "gender-west",
+        "family-east",
+        "family-west",
+        "catholic",
+        "markham",
+        "gender",
+        "family",
       ].includes(newElement.id);
 
       if (shouldCreateVignette) {

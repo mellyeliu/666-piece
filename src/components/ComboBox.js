@@ -1,4 +1,5 @@
 import React from "react";
+import Element from "./Element";
 
 const styles = {
   comboBox: {
@@ -16,6 +17,19 @@ const styles = {
     fontSize: "var(--font-size-medium)",
     fontFamily: "var(--font-family-mono-alt)",
     backgroundImage: "url('/paper-dark.png')",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  clearButton: {
+    background: "none",
+    border: "none",
+    color: "black",
+    cursor: "pointer",
+    fontSize: "var(--font-size-small)",
+    padding: "4px 8px",
+    fontFamily: "var(--font-family-mono)",
+    fontWeight: "bold",
   },
   gridContainer: {
     flex: 1,
@@ -75,21 +89,34 @@ const ComboBox = ({
   onDragStart,
   onDragOver,
   onGridDrop,
+  onComboDrop,
 }) => {
   return (
     <>
       <style>{swingAnimation}</style>
       <div style={styles.comboBox}>
-        <div style={styles.comboTitle}>元素網格</div>
+        <div style={styles.comboTitle}>
+          <span>元素網格</span>
+          <button
+            style={styles.clearButton}
+            onClick={() => onGridDrop(null, 0, 0, true)}
+          >
+            🗑️
+          </button>
+        </div>
         <div
           style={styles.gridContainer}
           onDragOver={onDragOver}
           onDrop={(e) => {
-            e.preventDefault();
-            const rect = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            onGridDrop(e, x, y);
+            if (e) {
+              e.preventDefault();
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const y = e.clientY - rect.top;
+              onGridDrop(e, x, y);
+            } else {
+              onGridDrop(null, 0, 0, true);
+            }
           }}
         >
           {gridElements.map((element, index) => (

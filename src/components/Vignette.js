@@ -14,7 +14,7 @@ const styles = {
   storyImage: (title) => ({
     // width: "50vh",
     height: "100%",
-    backgroundImage: `url('scroll/${title}.png')`,
+    backgroundImage: `url('scroll/${title.toLowerCase()}.png')`,
     backgroundSize: "contain",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -136,6 +136,17 @@ const Vignette = ({
           description: "The place of learning and growth",
         },
       ],
+      gender: [
+        {
+          id: "gender",
+          name: "Gender",
+          chineseName: "性别",
+          icon: "⚧",
+          image: "scroll",
+          description:
+            "My parents always struggled with using the correct pronouns in English. 他, 她, 它. It was all the same to them",
+        },
+      ],
       internet: [
         {
           id: "internet",
@@ -164,7 +175,7 @@ const Vignette = ({
           icon: "👩",
           image: "scroll",
           description:
-            "My mom tried to convert to Catholicism but kept falling asleep during Bible class.",
+            "My mom was a pharmaceutical chemist. Intense and driven, soft and careless. She had a 10 year monotropic obsession with Steve Jobs.",
         },
       ],
       grandma: [
@@ -186,7 +197,7 @@ const Vignette = ({
           icon: "😢",
           image: "scroll",
           description:
-            "The challenges of being different in a Catholic school environment.",
+            "I was a problem child. Small and awkward, I was bullied relentlessly. In Asian suburbia. I couldn't even write it off as racist.",
         },
       ],
       food: [
@@ -197,7 +208,92 @@ const Vignette = ({
           icon: "🍳",
           image: "scroll",
           description:
-            "My grandma was bubbly and fun. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
+            "My grandma was bubbly and fun and cooked my favourite food. The president of a congregation of all the Asian grannies in our neighbourhood. She made the best 饅頭.",
+        },
+      ],
+      dad: [
+        {
+          id: "dad",
+          name: "Dad",
+          chineseName: "爸爸",
+          icon: "👨",
+          image: "scroll",
+          description:
+            "He was a computer engineer. He was always in his room, reading light novels or eating sunflower seeds. I learned chess, bike riding.",
+        },
+      ],
+      markham: [
+        {
+          id: "markham",
+          name: "Markham",
+          chineseName: "万锦",
+          icon: "🏘️",
+          image: "scroll",
+          description:
+            "Markham was a picture of Asian suburbia. Good food, good education. My school was a 5 minute walk from our house.",
+        },
+      ],
+      catholic: [
+        {
+          id: "catholic",
+          name: "Catholic",
+          chineseName: "天主教",
+          icon: "⛪",
+          image: "scroll",
+          description:
+            "I didn't know what to make of Catholicism. Every open door led to more questions on faith, gender, family, sexuality.",
+        },
+        {
+          id: "family",
+          name: "Family",
+          chineseName: "家庭",
+          icon: "👨‍👩‍👧‍👦",
+          image: "scroll",
+          description: "The traditional family structure and its evolution.",
+        },
+      ],
+      // "gender-east": [
+      //   {
+      //     id: "gender-east",
+      //     name: "Traditional Roles",
+      //     chineseName: "传统角色",
+      //     icon: "👘",
+      //     image: "scroll",
+      //     description:
+      //       "The traditional gender roles and expectations in Eastern culture.",
+      //   },
+      // ],
+      // "gender-west": [
+      //   {
+      //     id: "gender-west",
+      //     name: "Modern Identity",
+      //     chineseName: "现代身份",
+      //     icon: "🌈",
+      //     image: "scroll",
+      //     description:
+      //       "The modern understanding and expression of gender identity in Western culture.",
+      //   },
+      // ],
+      "family-east": [
+        {
+          id: "family-east",
+          name: "Extended Family",
+          chineseName: "大家庭",
+          icon: "🏮",
+          image: "scroll",
+          description:
+            "The importance of extended family and community in Eastern culture.",
+        },
+      ],
+      "family-west": [
+        {
+          id: "family-west",
+          name: "Nuclear Family",
+          chineseName: "核心家庭",
+          icon: "🏠",
+          image: "scroll",
+          description:
+            "For a while I loved the idea of individualism. I wanted differentiation. But somewhere behind my actualization was a profound loneliness.",
         },
       ],
       "internet-east": [
@@ -303,7 +399,7 @@ const Vignette = ({
           icon: "🍔",
           image: "scroll",
           description:
-            "The golden arches became a symbol of western culture, where we'd celebrate small victories with Happy Meals.",
+            "My sister and I would get so excited when my Grandma would take us to McDonalds.",
         },
       ],
     };
@@ -322,7 +418,7 @@ const Vignette = ({
 
   const handleWordClick = (word) => {
     console.log("Word clicked:", word);
-    const newElement = getNewElement(word, clickedElements.length);
+    const newElement = getNewElement(word, 0); // Always get the first element for the word
     console.log("New element from getNewElement:", newElement);
 
     if (newElement) {
@@ -330,6 +426,7 @@ const Vignette = ({
       if (typeof onDiscoverElement === "function") {
         onDiscoverElement(newElement);
         setClickedElements((prev) => [...prev, newElement.id]);
+        console.log("Element created and added to clicked elements");
       } else {
         console.error(
           "onDiscoverElement is not a function:",
@@ -354,6 +451,10 @@ const Vignette = ({
           "food",
           "internet",
           "school",
+          "catholic",
+          "markham",
+          "gender",
+          "family",
         ].includes(lowerWord)
       ) {
         return (
